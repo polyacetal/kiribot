@@ -231,4 +231,4 @@ async def on_message(message):
 		print("msg ans success")
 		return
 
-client.run("NzAyNTU1MzI4NzAwNjEyNzM3.XqBvyg._lHGc-BPvCOsAJLVftX1pvhZW1I")
+client.run("")

@@ -192,4 +192,4 @@ async def on_message(message):
 			print("msg voice success")
 
 
-client.run("NzAyNTU1MzI4NzAwNjEyNzM3.XqBvyg._lHGc-BPvCOsAJLVftX1pvhZW1I")
+client.run("")
