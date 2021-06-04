@@ -5,13 +5,14 @@ import sys
 import random
 import time
 import datetime
-import kiribot_fn
 
 date = datetime.datetime.now()
 client = discord.Client()
 vcc = discord.VoiceChannel
 vc = discord.VoiceClient
 setup = False
+basePath = os.path.split(os.path.realpath(__file__))[0]
+voicePath = os.path.join(*[basePath,"voice"])
 
 @client.event
 async def on_ready():
@@ -24,7 +25,7 @@ async def on_message(message):
 	global setup
 	global vc
 	global vcc
-	prefix = "'"
+	prefix = "$"
 
 	if message.author.bot:
 		return
@@ -35,19 +36,17 @@ async def on_message(message):
 			await client.change_presence(status = discord.Status.offline)
 			print("shutdown successfully")
 			await client.logout()
-		return
 
 	if message.content.startswith(prefix+"st"):
 		if setup == False:
 			setup = True
 			await message.channel.send("Welcome!\n起動しました")
 			print ("steup完了")
-		return
 
 	if setup == False:
 		return
 
-	if message.content.startswith(prefix+"sk") or message.content.startswith(prefix+"sp"):
+	if message.content.startswith(prefix+"sk"):
 		if message.author.voice is not None :
 			if vc == discord.VoiceClient or vc.is_connected() == False:
 				await message.channel.send('今から接続しますね')
@@ -58,56 +57,30 @@ async def on_message(message):
 				await message.channel.send('接続済みです。Over！')
 		else :
 			await message.channel.send('VCに接続してます？')
-		return
 
 	if message.content == (prefix+"tk"):
-		if vc.is_connected() == True:
-			await message.channel.send('切断作業中....。')
-			if vc.is_playing() == True :
-				vc.stop()
-			await vc.disconnect()
-			await message.channel.send('切断しました。\n対戦ありがとうございました')
-		else :
-			await message.channel.send('VCに接続してませんよ？')
-		return
-
-	if message.content == (prefix+"fz"):
-		print("1")
-		msg = "おしゃべりを中断します\nスリープモードに入ります"
-		await message.channel.send(msg)
-		setup = False
-		print("msg & stop success")
-		return
+            if vc.is_connected() == True:
+                await message.channel.send('切断作業中....。')
+                if vc.is_playing() == True :
+                    vc.stop()
+                await vc.disconnect()
+                await message.channel.send('切断しました。\n対戦ありがとうございました')
+            else :
+                await message.channel.send('VCに接続してませんよ？')
 
 	if message.content.startswith("ありがとう"):
-		msg = kiribot_fn.thx()
+		reply = ["そのように言ってもらえて何よりです","また何かあれば言ってください","どういたしまして"]
+		msg = random.choice(reply)
 		await message.channel.send(msg)
 		print("msg ans success")
-		return
 
-	if message.content.startswith("こんにちは"):
-		msg , source = kiribot_fn.hello()
+	if message.content.startswith("こんにちは") or message.content.startswith("こんにちわ"):
 		if vc != discord.VoiceClient and vc.is_connected() == True:
+			#FFmpeg必要.ソースと同階層に配置
+			source = discord.FFmpegPCMAudio("D:\\Pybot\\kiribot\\voice\\hello.wav" , options='-application audio')
 			vc.play(source)
-		await message.channel.send(msg)
+		await message.channel.send("こんにちは")
 		print("msg ans success")
-		return
-
-	if message.content.startswith("こんにちわ"):
-		msg , source = kiribot_fn.hello()
-		if vc != discord.VoiceClient and vc.is_connected() == True:
-			vc.play(source)
-		await message.channel.send(msg)
-		print("msg ans success")
-		return
-
-	if message.content.startswith("hello"):
-		msg , source = kiribot_fn.hello()
-		if vc != discord.VoiceClient and vc.is_connected() == True:
-			vc.play(source)
-		await message.channel.send(msg)
-		print("msg ans success")
-		return
 
 	if message.content.startswith("こんばんは") or message.content.startswith("こんばんわ"):
 		if vc != discord.VoiceClient and vc.is_connected() == True:
@@ -115,7 +88,6 @@ async def on_message(message):
 			vc.play(source)
 		await message.channel.send("こんばんは")
 		print("msg ans success")
-		return
 
 	if message.content.startswith("今何時？"):
 		word = "今は{}時{}"
@@ -123,10 +95,13 @@ async def on_message(message):
 		minute = date.minute
 		if minute >= 0 and minute <= 24:
 			reply = "くらいですね。"
+
 		elif minute >= 25 and minute <= 34:
 			reply = "半くらいですね。"
+
 		elif minute >= 35 and minute <= 49:
 			reply = "半過ぎですね。"
+
 		elif minute >= 50 and minute <= 59:
 			speech = "くらいですね。\nそろそろ{}時になります。"
 			nexthour = hour + 1
@@ -135,7 +110,6 @@ async def on_message(message):
 		msg = word.format(hour,reply)
 		await message.channel.send(msg)
 		print("time ans success")
-		return
 
 	if message.content.startswith("疲れた"):
 		reply = ["そんなときはずんだを食べましょう","お疲れ様です"]
@@ -149,7 +123,6 @@ async def on_message(message):
 			vc.play(source)
 		await message.channel.send(msg)
 		print("msg ans success")
-		return
 
 	if message.content.startswith("ｷﾘﾀﾝｶﾜｲｲﾔｯﾀｰ"):
 		reply = ["……ありがとうございます","なにいってんだこいつ。","ヘンタイさんですね……。","わたし、小学五年生なんですけど……"]
@@ -167,7 +140,6 @@ async def on_message(message):
 			vc.play(source)
 		await message.channel.send(msg)
 		print("msg ans success")
-		return
 
 	if message.content.startswith("おはよう"):
 		reply = "おはようございます{}"
@@ -199,7 +171,6 @@ async def on_message(message):
 			vc.play(source2)
 		await message.channel.send(msg)
 		print("msg ans success")
-		return
 
 	if message.content.startswith("ｵﾊﾖ"):
 		source = discord.FFmpegPCMAudio("D:\\Pybot\\kiribot\\voice\\hello4.wav" , options='-application audio')
@@ -207,7 +178,6 @@ async def on_message(message):
 			vc.play(source)
 		await message.channel.send("ｵﾊﾖ")
 		print("msg ans success")
-		return
 
 	if message.content.startswith("草"):
 		source = discord.FFmpegPCMAudio("D:\\Pybot\\kiribot\\voice\\lol.wav" , options='-application audio')
@@ -215,7 +185,6 @@ async def on_message(message):
 			vc.play(source)
 		await message.channel.send("草生えますね")
 		print("msg ans success")
-		return
 
 	if vc != discord.VoiceClient and vc.is_connected() == True:
 		if message.content.startswith("カウント"):
@@ -223,12 +192,7 @@ async def on_message(message):
 			vc.play(source)
 			await message.channel.send("すりー……、つー……、わーん……、ぜろー。")
 			print("msg voice success")
-			return
 
-	msg = kiribot_fn.test(message.content)
-	if msg :
-		await message.channel.send(msg)
-		print("msg ans success")
-		return
-
+with open(os.path.join(basePath,"token.txt")) as f:
+	token = 
 client.run("")
